@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>藝術家抽卡</title>
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: sans-serif;
+}
+
+#card {
+  font-size: 42px;
+  margin: 40px;
+}
+
+</style>
+</head>
+<body>
+
+<h2 id="counter">尚未開始</h2>
+<div id="card">點擊開始</div>
+
+<script>
+let pool = [];
+let currentSet = [];
+let index = 0;
+
+// 正確洗牌
+function shuffle(array) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// 載入 txt
+fetch("artists.txt")
+  .then(res => res.text())
+  .then(text => {
+    pool = text.split("\n").map(x => x.trim()).filter(x => x);
+    newRound();
+  });
+
+function newRound() {
+  currentSet = shuffle(pool).slice(0, 50);
+  index = 0;
+  nextCard();
+}
+
+function nextCard() {
+  if (index >= currentSet.length) {
+    newRound();
+    return;
+  }
+
+  document.getElementById("card").innerText = currentSet[index];
+  document.getElementById("counter").innerText =
+    `第 ${index + 1} / 50 題`;
+
+  index++;
+}
+
+document.body.onclick = nextCard;
+document.body.onkeydown = nextCard;
+</script>
+
+</body>
+</html>
